@@ -3,6 +3,7 @@ import random
 import time
 
 # gets a random 5-letter word from the Datamuse API
+# returns a string of the lowercase 5-letter word
 # ChatGPT helped me with formatting this function to properly handle the API response
 def get_random_5_letter_word():
     try:
@@ -25,26 +26,42 @@ def get_random_5_letter_word():
         print("Failed to parse JSON from the API response.")
         return None
 
+# generates visual feedback for a guess
+def generate_feedback(guess, word):
+    feedback = []
+    for i in range(5):
+        if guess[i] == word[i]:
+            feedback.append('🟩')
+        elif guess[i] in word:
+            feedback.append('🟨')
+        else:
+            feedback.append('🔲')
+    return ''.join(feedback)
+
 # starts the game and handles user input
 def start_game(word):
-    
+    if not word:
+        print("Cannot start the game without a word.")
+        return
+
     is_correct = False
     start_time = time.time()
     
-    # there are 6 guesses
+    guess_history = []
+
+    # there are 6 attempts maximum
     for _ in range(6):
-        
-        guess = input().strip().lower()
-        
-        # ensure the word has 5 letters
+        guess = input("Enter your 5-letter guess: ").strip().lower()
+
+        # checks if the guess is a 5-letter word
         if len(guess) != 5:
-            
             print("Please enter a 5-letter word.")
             continue
+
+        guess_history.append(guess)
         
-        # check if the word is the correct word
-        elif guess == word:
-            
+        # checks if the guess is correct and logs time
+        if guess == word:
             end_time = time.time()
             elapsed_time = end_time - start_time
             minutes = int(elapsed_time // 60)
@@ -52,29 +69,24 @@ def start_game(word):
             
             print("Congrats! You solved it in " + str(minutes) + " minutes and " + str(seconds) + " seconds.")
             is_correct = True
-            return
-        
-        # give feedback on the guess
-        else:
-            
-            feedback = []
-            for i in range(5):
-                if guess[i] == word[i]:
-                    feedback.append('🟩')
-                elif guess[i] in word:
-                    feedback.append('🟨')
-                else:
-                    feedback.append('🔲')
-            print(''.join(feedback))
-    
-    # if after all attempts the word is not guessed
-    if not is_correct:
+            break
 
+        else:
+            feedback = generate_feedback(guess, word)
+            print(feedback)
+
+    # if all 6 attempts are up and the word is still not guessed
+    if not is_correct:
         print("Sorry, you've used all attempts. The word was: " + word)
+
+    # prints the history of guesses
+    print("Your guesses were:")
+    for g in guess_history:
+        print("-", g)
 
 # repeats until the user decides to stop playing
 while True:  
     start_game(get_random_5_letter_word())
-    
+
     if input("Do you want to play again? (y/n): ").strip().lower() not in ['y', 'yes']:
         break
