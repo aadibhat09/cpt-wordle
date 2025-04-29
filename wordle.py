@@ -27,6 +27,8 @@ def get_random_5_letter_word():
         return None
 
 # generates visual feedback for a guess
+# accepts two strings: guess and word
+# returns a string of emojis representing the feedback
 def generate_feedback(guess, word):
     feedback = []
     for i in range(5):
