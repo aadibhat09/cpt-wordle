@@ -4,7 +4,7 @@ import time
 
 # gets a random 5-letter word from the Datamuse API
 # returns a string of the lowercase 5-letter word
-# ChatGPT helped me with formatting this function to properly handle the API response
+# this code was co-developed with help from ChatGPT (used for guidance in handling the API response)
 def get_random_5_letter_word():
     try:
         response = requests.get("https://api.datamuse.com/words?sp=?????")
@@ -56,6 +56,11 @@ def start_game(word):
         # checks if the guess is a 5-letter word
         if len(guess) != 5:
             print("Please enter a 5-letter word.")
+            continue
+        
+        # checks if the guess has already been made
+        if guess in guess_history:
+            print("You've already guessed that word. Try something else.")
             continue
 
         guess_history.append(guess)
